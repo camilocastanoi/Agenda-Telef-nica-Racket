@@ -1,0 +1,126 @@
+
+
+
+#| 
+PROYECTO FINAL: 
+Autor: Ing(c) Juan Camilo Castaño Marulanda 
+Código: 1193521035 
+Nombre del lenguaje utilizado: Racket 
+Versión del lenguaje utilizado: 8.9 
+Presentado a: Docente Cesar Manuel Castillo Rodriguez 
+Universidad Tecnológica de Pereira 
+Programa de Ingeniería de Sistemas y Computación 
+Contrato: Programa en Racket para una agenda telefónica. Permite ingresar y gestionar registros de personas: 
+Nombre, Cédula, Dirección y Teléfono. Interfaz con menú para agregar, consultar, salir. 
+Salvedad: UNICAMENTE se pueden ingresar lo solicitado. 
+|# 
+
+; Se define una lista vacía para almacenar las personas. 
+(define listaPersona '()) 
+
+ ; Se define una estructura llamada persona con los campos: nombre, cedula, direccion y telefono. 
+(define-struct persona (nombre cedula direccion telefono)) 
+
+ ; Se define una lista llamada 'datos' que contiene valores predeterminados para nombre, cedula, direccion, telefono y opcion.        
+(define datos(list "" 0 "" 0 0)) 
+
+ ; Se extraen los valores de la lista 'datos' y se asignan a las variables correspondientes. 
+(define nombre (list-ref datos 0)) 
+(define cedula (list-ref datos 1)) 
+(define direccion (list-ref datos 2)) 
+(define telefono (list-ref datos 3)) 
+(define opcion (list-ref datos 4)) 
+
+ ; Esta función permite al usuario agregar nuevos registros a la agenda telefónica. 
+(define (agregarDatos) 
+  (let ((nombre "") (cedula "") (direccion "") (telefono "")) 
+ (display "Agregar datos:\n") 
+ (display "Nombre: (Ingresar con comillas dobles)\n") (set! nombre (read)) 
+ (display "Cedula: ") (set! cedula (read)) 
+ (display "Direccion: (Ingresar con comillas dobles)\n") (set! direccion (read)) 
+ (display "Telefono: ") (set! telefono (read)) 
+ (set! listaPersona (append listaPersona (list (make-persona nombre cedula direccion telefono)))) 
+ (displayln listaPersona) 
+ (AgendaTelefonica) 
+  ) 
+) 
+
+; Define una variable llamada 'conteo' inicializada en 0. Esta variable se utiliza para almacenar la opción de consulta seleccionada por el usuario. 
+(define conteo 0) 
+; Esta función permite al usuario elegir cómo desea consultar los datos en la agenda telefónica. 
+(define(consulteme) 
+(displayln "2. Consultar datos:") 
+(displayln "Consultar Agenda Telefonica:") 
+(display "1. Consultar todos los datos\n2. Consultar datos por nombre\n3. Volver al menu principal\nIngrese su opcion: ") 
+
+ ; Lee la opción ingresada por el usuario y la asigna a la variable 'conteo'.  
+(set! conteo (read)) 
+ ; Llama a la función 'consultarDatos' con los parámetros 'listaPersona' y 'Conteo'. Esta función probablemente realiza la consulta correspondiente según la opción seleccionada. 
+(consultarDatos listaPersona conteo)) 
+
+; Define una variable llamada 'name' inicializada como una cadena vacía.Se utiliza para almacenar un nombre. 
+(define name "") 
+ ; Esta función se utiliza para consultar los datos de una lista de personas en la agenda telefónica. 
+   ; Toma dos parámetros: 'lista', que es la lista de personas, y 'cont', que indica el tipo de consulta a realizar.     
+(define (consultarDatos lista cont) 
+   (cond 
+ ((= cont 0) 
+ (consulteme)) 
+   ((= cont 1) 
+    ; Si la lista está vacía,  no hay datos para mostrar.Si la lista no está vacía, muestra los datos de la primera persona en la lista.       
+ (cond 
+  ((empty? lista) (consulteme)) 
+        ;Imprime los detalles de una persona específica en la agenda telefónica, extrayendo los valores relevantes de la estructura de datos persona y mostrándolos en la consola para que el usuario pueda verlos. 
+ (else 
+ (displayln (persona-nombre (car lista))) 
+ (displayln (persona-cedula (car lista))) 
+ (displayln (persona-direccion (car lista))) 
+ (displayln (persona-telefono (car lista)))(newline) 
+; Llama a la función 'consultarDatos' con la cola de la lista y '1' como parámetros para continuar la consulta. 
+ (consultarDatos (cdr lista) 1)) 
+ ) 
+   ) 
+  ((= cont 2); Si 'cont' es igual a 2, significa que se debe buscar un registro por nombre. 
+ ; Solicita al usuario que ingrese el nombre de la persona a buscar.Lee el nombre ingresado por el usuario y lo asigna a la variable 'name'.         
+ (display "Ingrese el nombre de la persona:")(set! name (read)) 
+ (newline) 
+        (consultarDatos lista 4)) 
+  ; Si 'cont' es igual a 4, significa que se está realizando una búsqueda por nombre. 
+  ((= cont 4) 
+ (cond 
+ ((empty? lista)(consulteme)); Si la lista está vacía, vuelve al menú principal. 
+  ((eqv? (persona-nombre(car lista))name) 
+ ; Si el nombre de la persona en la cabeza de la lista coincide con el nombre buscado: 
+  (displayln (persona-nombre (car lista))) 
+  (displayln (persona-cedula (car lista))) 
+  (displayln (persona-direccion (car lista))) 
+  (displayln (persona-telefono (car lista))) 
+  (newline) ;Muestra nombre,cedula,direccion, telefono. 
+  (consultarDatos (cdr lista) 4)) 
+   ; Continúa la búsqueda por nombre en el resto de la lista. 
+   (else (consultarDatos (cdr lista) 4)))) 
+        ; Si el nombre no coincide, continúa la búsqueda en el resto de la lista. 
+; Si 'cont' es igual a 3, significa que el usuario desea volver al menú principal. 
+ ((= cont 3) 
+ (AgendaTelefonica)) 
+        ) 
+  ); Llama a la función 'AgendaTelefonica' para volver al menú principal. 
+
+;funcion principal donde se le da la opcion al usuario de si agregar a una persona, mostrar las personas agregadas o salir del programa 
+ ; Define una variable llamada 'opciones' inicializada en 0 para almacenar la opción seleccionada por el usuario. 
+(define opciones 0) 
+(define (AgendaTelefonica) 
+   ; Esta función es la principal de la agenda telefónica. 
+  (displayln "Agenda Telefonica:\n") 
+  (display "1. Agregar datos \n2. Consultar datos \n3. Salir \nIngrese su opcion:")(set! opciones (read)) 
+  (cond 
+ ((= opciones 1)(agregarDatos)) 
+ ((= opciones 2)(consulteme)) 
+ ((= opciones 3)(display "fin")) 
+  (else (display "error")) 
+ ) 
+ )   
+(AgendaTelefonica) ; prueba 
+
+;valor esperado: (#<persona>) 
+
